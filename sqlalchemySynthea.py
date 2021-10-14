@@ -48,7 +48,8 @@ devicesColumns = pd.read_sql('SELECT * FROM synthea.devices LIMIT 1000', engine)
 
 ##Total number of insurance companies
 insuranceCompanies = pd.read_sql('SELECT * FROM synthea.payers LIMIT 1000', engine)
-##9 insurance companies 
+insuranceCompaniesCounted = pd.read_sql('SELECT COUNT(payers.name) FROM synthea.payers LIMIT 1000', engine)
+##9 insurance companies; 10 including no insurance 
 
 ##Total revenue across all the insurance companies 
 insuranceRevenue = pd.read_sql('SELECT SUM(payers.revenue) FROM synthea.payers LIMIT 1000', engine)
@@ -60,6 +61,7 @@ imagingBodySite
 
 ##Unique patients that received imaging study 
 imagingPatient = pd.read_sql('SELECT COUNT(DISTINCT imaging_studies.patient) FROM synthea.imaging_studies LIMIT 1000', engine)
+imagingPatient
 
 ##Average number of iamging studies with patiewnts that have at least one procedure 
 totalImaging = pd.read_sql('SELECT procedures.patient, COUNT(*) FROM synthea.procedures INNER JOIN synthea.imaging_studies ON procedures.patient = imaging_studies.patient GROUP BY procedures.patient HAVING COUNT(*) >=1 ORDER BY COUNT(*) desc', engine)
