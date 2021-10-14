@@ -72,3 +72,16 @@ avgImagingCombined = pd.read_sql('SELECT avg(count) FROM (select procedures.PATI
 avgImagingCombined
 
 ##Males vs females encountters 
+maleEncounters = pd.read_sql('SELECT COUNT(patients.gender) FROM synthea.patients LEFT JOIN synthea.encounters ON patients.id = encounters.id WHERE patients.gender = "M"', engine)
+maleEncounters
+femaleEncounters = pd.read_sql('SELECT COUNT(patients.gender) FROM synthea.patients LEFT JOIN synthea.encounters ON patients.id = encounters.id WHERE patients.gender = "F"', engine)
+femaleEncounters
+
+##Top 5 conditions based on encounters 
+topConditions = pd.read_sql('SELECT procedures.description, COUNT(*) FROM synthea.procedures GROUP BY procedures.description ORDER BY COUNT(*) desc', engine)
+topConditions
+
+##Range and average of BMI of white male patients 
+bmiWhiteMale = pd.read_sql('SELECT patients.gender, patients.race, observations.description, MIN(observations.value) as Minimum, MAX(observations.value) as Maximum, AVG(observations.value) as Average FROM synthea.patients LEFT JOIN synthea.observations ON patients.id = observations.patient WHERE (gender = "M" AND race = "white") AND (description = "body mass index")', engine)
+GROUP BY observations.description
+
