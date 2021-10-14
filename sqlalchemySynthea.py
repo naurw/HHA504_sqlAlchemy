@@ -85,3 +85,10 @@ topConditions
 bmiWhiteMale = pd.read_sql('SELECT patients.gender, patients.race, observations.description, MIN(observations.value) as Minimum, MAX(observations.value) as Maximum, AVG(observations.value) as Average FROM synthea.patients LEFT JOIN synthea.observations ON patients.id = observations.patient WHERE (gender = "M" AND race = "white") AND (description = "body mass index")', engine)
 GROUP BY observations.description
 
+##Codes for medications, conditions, and allergy values
+codeMedications = pd.read_sql('SELECT medications.code, medications.description FROM synthea.medications LIMIT 1000', engine)
+##RxNorm
+codeConditions = pd.read_sql('SELECT conditions.code, conditions.description FROM synthea.conditions LIMIT 1000', engine)
+##SNOMED-CT 
+codeAllergies = pd.read_sql('SELECT allergies.code, allergies.description FROM synthea.allergies LIMIT 1000', engine)
+##SNOMED-CT 
