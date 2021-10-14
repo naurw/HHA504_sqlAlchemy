@@ -19,8 +19,8 @@ mysqluser = os.getenv('mysqluser')
 mysqlpassword = os.getenv('mysqlpassword')
 
 MYSQL_HOSTNAME = '20.62.193.224:3305'
-MYSQL_USER = 'williamruan'
-MYSQL_PASSWORD = 'williamruan2021'
+MYSQL_USER = 'INSERT_USER'
+MYSQL_PASSWORD = 'INSERT_PASSWORD'
 MYSQL_DATABASE = 'synthea'
 
 #conda install -c anaconda pymysql
