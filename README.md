@@ -1,2 +1,2 @@
-# HHA507_sqlAlchemy
-Utilized sqlalchemy to perform extraction of information within the synthea database.  
+# HHA504_sqlAlchemy
+Utilized sqlalchemy to perform SQL to extract of information within the synthea database.  
