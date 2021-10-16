@@ -1,2 +1,2 @@
 # HHA504_sqlAlchemy
-Utilized sqlalchemy to perform SQL to extract of information within the synthea database.  
+Connected to a MYSQL database using Python and utilized Pandas SQLAlchemy to perform extractions of information and creation of DataFrames.   
