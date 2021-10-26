@@ -67,6 +67,9 @@ on allergies.patient = patients.id; <== primary key
 
 """
 
+query3 = 'select * from allergies left join patients on allergies.patient = patients.id;'
+leftjoinAllergiesPatients = pd.read_sql(query3, engine)
+
 # =============================================================================
 # DataFrame.merge(right, 
 #                 how='inner', {'right','outer','cross', <== DEFAULT 'inner'}
@@ -98,6 +101,9 @@ left join allergies
 on allergies.patient = patients.id; 
 
 """
+
+query4 = 'select * from patients left join allergies on patients.id = allergies.patient;'
+leftjoinPatientsAllergies = pd.read_sql(query4, engine)
 
 patientsAllergies = patients.merge(allergies, how='left', left_on= 'Id', right_on= 'PATIENT')
 len(patientsAllergies)
