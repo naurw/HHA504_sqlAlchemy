@@ -25,6 +25,9 @@ connection_string = f'mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOSTN
 engine = create_engine(connection_string)
 print (engine.table_names())
 
+#establishign conneciton via connect() function in python but the above works as well  
+#connection = engine.connect()
+
 ### Way 1A - using engine.execute
 engine.execute("SELECT * FROM allergies LIMIT 100").fetchall()
 
@@ -124,4 +127,52 @@ df3 = pd.concat([df1, df2])
 df4 = pd.concat([df1, allergies]) ## Forced two datasets together; did not match based on same columns <== AVOID
 df5 = allergies.sample(10)
 df6 = pd.concat([df1, df5]) ## Forced two datasets together; did not match based on same columns <== AVOID
+
+
+import sqlalchemy as db
+from sqlalchemy import Table, MetaData 
+from sqlalchemy.sql import text
+#conda install -c anaconda sqlalchemy_views
+#from sqlalchemy_views import CreateView, DropView 
+from sqlalchemy.ext.compiler import compiles
+from sqlalchemy.sql.expression import Executable, ClauseElement
+
+
+#importing metadata 
+metadata = db.MetaData() 
+patient = db.Table('patients', metadata, autoload=True, autoload_with=engine)
+encounter = db.Table('encounters', metadata, autoload=True, autoload_with=engine)
+
+# =============================================================================
+# class CreateView(Executable, ClauseElement): 
+#     def __init__(self, name, select):
+#         self.name = name 
+#         self.select = select 
+# 
+# @compiles(CreateView)
+# def visit_create_view(element, compiler, **kw):
+#     return "CREATE VIEW %s as %s" % (element.name,
+#                                      compiler.process(element.select, literal_binds=True)
+#                                      )
+# def view_top_three():
+#     top_three_view = CreateView('
+# 
+#     engine.execute(top_three_view)
+#     v = Table('counts', metadata, autoload=True, autoload_with=engine)
+#     for r in engine.execute(v.select()):
+#         print(r)    
+# =============================================================================
+
+view = Table('patientC9ounter')
+
+#importing tabels 
+##Query 1: ##Cumulative observations across all encounters PER patient##
+patientCounts = pd.read_sql('select count(*), observations.patient from synthea.observations group by observations.patient', engine)
+patientCountsPain = pd.read_sql('select count(*) as observations_counts, observations.patient from synthea.observations where observations.code = "72514-3" and observations.value > 5.0 group by observations.patient', engine)
+##Query 2: ##Each row is a unique patient; showing cumulative encounters per unique patient
+encounterCountsPain = pd.read_sql('select count(*) as encounters_counts, encounters.patient from synthea.encounters left join synthea.observations on observations.patient = encounters.patient where observations.code = "72514-3" and observations.value > 5.0 group by observations.patient', engine)
+##Query 3: Query 1 + 2 thru subquery | Utilize Pandas merge() to combine two datasets; essentially union; normally would use concat() since it is by definition closer to union, but different datasets caused issues with the table
+####################################combined = pd.read_sql('(select count(*) as observations_counts, observations.patient from synthea.observations where observations.code = "72514-3" and observations.value > 5.0 group by observations.patient) UNION (select count(*) as encounters_counts, encounters.patient from synthea.encounters left join synthea.observations on observations.patient = encounters.patient where observations.code = "72514-3" and observations.value > 5.0 group by observations.patient)', engine)
+merged = patientCountsPain.merge(encounterCountsPain, how='inner', left_on='patient', right_on='patient')
+
 
