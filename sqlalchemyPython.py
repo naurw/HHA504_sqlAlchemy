@@ -128,44 +128,42 @@ df4 = pd.concat([df1, allergies]) ## Forced two datasets together; did not match
 df5 = allergies.sample(10)
 df6 = pd.concat([df1, df5]) ## Forced two datasets together; did not match based on same columns <== AVOID
 
-
-import sqlalchemy as db
-from sqlalchemy import Table, MetaData 
-from sqlalchemy.sql import text
-#conda install -c anaconda sqlalchemy_views
-#from sqlalchemy_views import CreateView, DropView 
-from sqlalchemy.ext.compiler import compiles
-from sqlalchemy.sql.expression import Executable, ClauseElement
-
-
-#importing metadata 
-metadata = db.MetaData() 
-patient = db.Table('patients', metadata, autoload=True, autoload_with=engine)
-encounter = db.Table('encounters', metadata, autoload=True, autoload_with=engine)
-
 # =============================================================================
-# class CreateView(Executable, ClauseElement): 
-#     def __init__(self, name, select):
-#         self.name = name 
-#         self.select = select 
+# =============================================================================
+# SQLAlchemy CreateView and DropView documentation
+# =============================================================================
+# =============================================================================
+#
+# from sqlalchemy import Table, MetaData 
+# from sqlalchemy.sql import text
+# conda install -c anaconda sqlalchemy-views
+# from sqlalchemy_views import CreateView, DropView 
 # 
-# @compiles(CreateView)
-# def visit_create_view(element, compiler, **kw):
-#     return "CREATE VIEW %s as %s" % (element.name,
-#                                      compiler.process(element.select, literal_binds=True)
-#                                      )
-# def view_top_three():
-#     top_three_view = CreateView('
+# >>> view = Table('my_view', MetaData())
+# >>> definition = text("SELECT * FROM my_table")
+# >>> create_view = CreateView(view, definition)
+# >>> print(str(create_view.compile()).strip())
+# CREATE OR REPLACE VIEW my_view AS SELECT * FROM my_table
 # 
-#     engine.execute(top_three_view)
-#     v = Table('counts', metadata, autoload=True, autoload_with=engine)
-#     for r in engine.execute(v.select()):
-#         print(r)    
+# >>> create_view = CreateView(view, definition, or_replace=True)
+# >>> print(str(create_view.compile()).strip())
+# CREATE OR REPLACE VIEW my_view AS SELECT * FROM my_table
+# 
+# >>> create_view = CreateView(view, definition, options={'check_option': 'local'})
+# >>> print(str(create_view.compile()).strip())
+# CREATE VIEW my_view WITH (check_option=local) AS SELECT * FROM my_table
+# 
+# >>> drop_view = DropView(view)
+# >>> print(str(drop_view.compile()).strip())
+# DROP VIEW my_view
+# 
+# >>> drop_view = DropView(view, if_exists=True, cascade=True)
+# >>> print(str(drop_view.compile()).strip())
+# DROP VIEW IF EXISTS my_view CASCADE
+# 
 # =============================================================================
 
-view = Table('patientC9ounter')
-
-#importing tabels 
+#Simplification of the above using pandas merge 
 ##Query 1: ##Cumulative observations across all encounters PER patient##
 patientCounts = pd.read_sql('select count(*), observations.patient from synthea.observations group by observations.patient', engine)
 patientCountsPain = pd.read_sql('select count(*) as observations_counts, observations.patient from synthea.observations where observations.code = "72514-3" and observations.value > 5.0 group by observations.patient', engine)
